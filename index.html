@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <script
+      defer
+      src="https://unpkg.com/@alpinejs/mask@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"
+      integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <style>
+      [x-cloak] {
+        display: none;
+      }
+    </style>
+    <title>Alpine.js Crash Course</title>
+  </head>
+  <body>
+    <div class="container mx-auto mt-6 max-w-sm">
+      <h1 class="text-5xl mb-4">Alpine.js Demo</h1>
+
+      <div
+        x-data="{open: false, name: 'Anding', search: '', posts: [
+        {title: 'Post one'},
+        {title: 'Post two'},
+        {title: 'Post three'},
+        {title: 'Post four'}
+        ]}"
+      >
+        <button
+          x-bind:class="open ? 'bg-blue-800' : 'bg-slate-700'"
+          class="bg-slate-700 text-white px-4 py-2 rounded-xl"
+          x-on:click="open=!open"
+        >
+          Toggle
+        </button>
+        <div x-show="open" x-transition x-cloak>
+          <p class="bg-gray-200 p-4 my-6 rounded">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </p>
+        </div>
+
+        <div class="my-4">
+          The value of name is <span x-text="name" class="font-bold"></span>
+        </div>
+
+        <div x-effect="console.log(open);"></div>
+        <input
+          type="text"
+          x-model="search"
+          class="border p-2 w-full mb-2 mt-6"
+          placeholder="Searching for something..."
+        />
+        <p>
+          <span class="font-bold">Searching for:</span>
+          <span x-text="search"></span>
+        </p>
+
+        <template x-if="open">
+          <div class="bg-gray-50 p-2 mt-8">Template based on a condition</div>
+        </template>
+
+        <h3 class="text-2xl mt-6 mb-3 font-bold">Posts</h3>
+        <button
+          @click="posts.push({title: 'New Post'})"
+          class="bg-blue-800 text-white px-4 py-2 rounded-xl mt-4"
+        >
+          Add Post
+        </button>
+        <template x-for="post in posts">
+          <div x-text="post.title"></div>
+        </template>
+
+        <div class="my-6">
+          <button
+            @click="$refs.text.innerText='Zerotone'"
+            class="bg-black text-white p-2 rounded-xl"
+          >
+            Change
+          </button>
+          <button
+            @click="$refs.text.remove()"
+            class="bg-black text-white p-2 rounded-xl"
+          >
+            Remove
+          </button>
+
+          <div x-ref="text">Hello World</div>
+        </div>
+
+        <div x-html="(await axios.get('./partial.html')).data">...</div>
+
+        <button @click="$el.innerHTML='Hello World'" class="mt-4 p-4 border">
+          Replace Text
+        </button>
+
+        <div x-init="$watch('posts', value=>console.log(value))"></div>
+
+        <div @notify="alert('You have been notified!')">
+          <button
+            @click="$dispatch('notify')"
+            class="bg-green-700 text-white p-2 mt-4 rounded-lg"
+          >
+            Notify
+          </button>
+        </div>
+
+        <button
+          @click="getLatestPost($data.posts)"
+          class="bg-orange-800 text-white p-2 mt-4 rounded-xl"
+        >
+          Get Latest Post
+        </button>
+
+        <div class="mt-6">
+          <h3 class="text-2xl mb-2">Enter a date:</h3>
+          <input
+            class="border w-full p-2"
+            x-mask="99/99/9999"
+            placeholder="MM/DD/YYYY"
+          />
+        </div>
+      </div>
+
+      <div
+        x-data
+        :class="$store.darkMode.on && 'bg-gray-800 text-white'"
+        class="container mx-auto max-w-sm mt-6 bg-gray-50 p-4"
+      >
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum
+        dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet
+        consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
+        adipisicing elit. Lorem ipsum dolor sit amet consectetur adipisicing
+        elit. Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem
+        ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit
+        amet consectetur adipisicing elit. Lorem ipsum dolor sit amet
+        consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
+        adipisicing elit.
+        <button
+          class="block bg-gray-200 text-xs px-4 py-2 mt-4"
+          :class="$store.darkMode.on && 'bg-gray-700'"
+          @click="$store.darkMode.toggle()"
+        >
+          Toggle Dark Mode
+        </button>
+      </div>
+
+      <footer x-data class="text-center mt-10">
+        <p>Copyright &copy; <span x-text="new Date().getFullYear()"></span></p>
+      </footer>
+      <script>
+        function getLatestPost(posts) {
+          console.log(posts.slice(-1).pop());
+        }
+        document.addEventListener("alpine:init", () => {
+          Alpine.store("darkMode", {
+            on: false,
+            toggle() {
+              this.on = !this.on;
+            },
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
